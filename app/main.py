@@ -15,22 +15,45 @@
 import logging
 
 from flask import Flask
-from flask import request
-from airports import Airports
+from flaskext.mysql import MySQL
+import json
 
 app = Flask(__name__)
-airport_util = Airports()
 
 @app.route('/airportName', methods=['GET'])
 def airportName():
-    """Given an airport IATA code, return that airport's name."""
-    iata_code = request.args.get('iataCode')
-    if iata_code is None:
-      return 'No IATA code provided.', 400
-    maybe_name = airport_util.get_airport_by_iata(iata_code)
-    if maybe_name is None:
-      return 'IATA code not found : %s' % iata_code, 400
-    return maybe_name, 200
+    return json.dumps(getDBData())
+
+
+def getDBData():
+    mysql = MySQL()
+
+    # MySQL configurations
+    print ('BEFORE DB')
+    app.config['MYSQL_DATABASE_USER'] = 'root'
+    app.config['MYSQL_DATABASE_PASSWORD'] = '1234'
+    app.config['MYSQL_DATABASE_DB'] = 'mysql'
+    app.config['MYSQL_DATABASE_HOST'] = 'localhost'
+    print('BEFORE DB - init')
+    mysql.init_app(app)
+    print('BEFORE DB-connect')
+    conn = mysql.connect()
+    print('BEFORE DB- after connect')
+    cursor = conn.cursor()
+    print('BEFORE DB-cursor')
+    cursor.execute("select * from mysql.TEST")
+    print('BEFORE DB - after query')
+    outputList = []
+    for row in cursor.fetchall():
+        output={}
+        output['id'] = row[0]
+        output['name'] = row[1]
+        output['skill'] = row[2]
+        output['team'] = row[3]
+        outputList.append(output)
+    cursor.close()
+    return outputList
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8080, debug=True)
+
