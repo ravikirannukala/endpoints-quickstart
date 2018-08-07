@@ -18,7 +18,7 @@ info:
   description: "Get the list of developers"
   version: "1.0.0"
 # This field will be replaced by the deploy_api.sh script.
-host: "ravi-test-29-07-2018-2.appspot.com"
+host: "DEMO_PROJECT_ID.appspot.com"
 schemes:
   - "https"
 paths:
@@ -33,3 +33,14 @@ paths:
             type: string
         400:
           description: "Missing Developers"
+  "/developers/pushdata":
+    get:
+      description: "Push Developers Data"
+      operationId: "pushData"
+      responses:
+        200:
+          description: "Success."
+          schema:
+            type: string
+        400:
+          description: "Missing Developers"          

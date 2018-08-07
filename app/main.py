@@ -38,6 +38,8 @@ def pushSampleData():
         with connection.cursor() as cursor:
             for developer in listOfDevs:
                 # Read a single record
+                createsql = 'CREATE TABLE IF NOT EXISTS TEST ( id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, name VARCHAR(30), skill VARCHAR(30), team VARCHAR(50) )'
+                cursor.execute(createsql)
                 sql = "INSERT INTO TEST (name,skill,team) VALUES ("+"'" + developer['name'] + "'" + ',' + "'" + developer['skill'] + "'" + ',' + "'" +developer['team'] +"'"+ ')'
                 print (sql)
                 cursor.execute(sql)
@@ -53,10 +55,10 @@ def getDevelopers():
     return json.dumps(getDevelopers(connection))
 
 def createDBConnection ():
-    connection = pymysql.connect(host='localhost',
+    connection = pymysql.connect(host=DB_HOST_NAME,
                                  user='root',
-                                 password='1234',
-                                 db='mysql',
+                                 password='DB_PASSWORD',
+                                 db='developers',
                                  charset='utf8mb4',
                                  cursorclass=pymysql.cursors.DictCursor)
     return connection
