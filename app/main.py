@@ -65,13 +65,14 @@ def createDBConnection ():
 
 
 def getDevelopers(connection):
-    print('BEFORE DB - after query')
+    print('LOG: DB Request')
     try:
         with connection.cursor() as cursor:
             # Read a single record
             sql = "SELECT * from TEST"
             cursor.execute(sql)
             result = cursor.fetchall()
+            print('LOG: DB Response')
     finally:
         connection.close()
     return result
