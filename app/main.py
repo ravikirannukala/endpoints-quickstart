@@ -15,22 +15,67 @@
 import logging
 
 from flask import Flask
-from flask import request
-from airports import Airports
+import pymysql.cursors
+import json
 
 app = Flask(__name__)
-airport_util = Airports()
+listOfDevs = [{
+                    'name':'ravi',
+                    'skill':'gcp',
+                    'team':'gcp'
+                },
+                {
+                    'name':'ravi1',
+                    'skill':'gcp1',
+                    'team':'gcp1'
+                }
+            ]
 
-@app.route('/airportName', methods=['GET'])
-def airportName():
-    """Given an airport IATA code, return that airport's name."""
-    iata_code = request.args.get('iataCode')
-    if iata_code is None:
-      return 'No IATA code provided.', 400
-    maybe_name = airport_util.get_airport_by_iata(iata_code)
-    if maybe_name is None:
-      return 'IATA code not found : %s' % iata_code, 400
-    return maybe_name, 200
+@app.route('/developers/pushdata', methods=['GET'])
+def pushSampleData():
+    connection = createDBConnection()
+    try:
+        with connection.cursor() as cursor:
+            for developer in listOfDevs:
+                # Read a single record
+                createsql = 'CREATE TABLE IF NOT EXISTS TEST ( id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, name VARCHAR(30), skill VARCHAR(30), team VARCHAR(50) )'
+                cursor.execute(createsql)
+                sql = "INSERT INTO TEST (name,skill,team) VALUES ("+"'" + developer['name'] + "'" + ',' + "'" + developer['skill'] + "'" + ',' + "'" +developer['team'] +"'"+ ')'
+                print (sql)
+                cursor.execute(sql)
+                print ('SQL push successful' + developer['name'])
+        connection.commit()
+    finally:
+        connection.close()
+    return 'Data Inserted'
+
+@app.route('/developers', methods=['GET'])
+def getDevelopers():
+    connection = createDBConnection()
+    return json.dumps(getDevelopers(connection))
+
+def createDBConnection ():
+    connection = pymysql.connect(host=DB_HOST_NAME,
+                                 user='root',
+                                 password='DB_PASSWORD',
+                                 db='developers',
+                                 charset='utf8mb4',
+                                 cursorclass=pymysql.cursors.DictCursor)
+    return connection
+
+
+def getDevelopers(connection):
+    print('LOG: DB Request')
+    try:
+        with connection.cursor() as cursor:
+            # Read a single record
+            sql = "SELECT * from TEST"
+            cursor.execute(sql)
+            result = cursor.fetchall()
+            print('LOG: DB Response')
+    finally:
+        connection.close()
+    return result
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8080, debug=True)

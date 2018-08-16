@@ -14,28 +14,33 @@
 ---
 swagger: "2.0"
 info:
-  title: "Airport Codes"
-  description: "Get the name of an airport from its three-letter IATA code."
+  title: "developer-api-v1"
+  description: "Get the list of developers"
   version: "1.0.0"
 # This field will be replaced by the deploy_api.sh script.
-host: "YOUR-PROJECT-ID.appspot.com"
+host: "DEMO_PROJECT_ID.appspot.com"
 schemes:
   - "https"
 paths:
-  "/airportName":
+  "/developers":
     get:
-      description: "Get the airport name for a given IATA code."
-      operationId: "airportName"
-      parameters:
-        -
-          name: iataCode
-          in: query
-          required: true
-          type: string
+      description: "Get List of Developers"
+      operationId: "getDevelopers"
       responses:
         200:
           description: "Success."
           schema:
             type: string
         400:
-          description: "The IATA code is invalid or missing."
+          description: "Missing Developers"
+  "/developers/pushdata":
+    get:
+      description: "Push Developers Data"
+      operationId: "pushData"
+      responses:
+        200:
+          description: "Success."
+          schema:
+            type: string
+        400:
+          description: "Missing Developers"          
